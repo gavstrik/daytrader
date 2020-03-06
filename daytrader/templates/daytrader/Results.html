@@ -1,0 +1,36 @@
+
+
+{% block title %}
+    Results after {{ subsession.round_number }} rounds
+{% endblock %}
+
+{% block content %}
+
+    <table class="table">
+        <tr>
+            <th>Day</th>
+            <th>Opening Price</th>
+            <th>Closing Price</th>
+            <th>Change</th>
+        </tr>
+        {% for p in player_in_all_rounds %}
+            <tr>
+                <td>{{ p.round_number }}. </td>
+                <td>{{ p.get_old_share_price | c }}</td>
+                <td>{{ p.price | c }}</td>
+                <td>{{ p.payoff | c }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <p>
+        You {% if player.choice_of_trade == True %} bought {% else %} shorted {% endif %} {{ player.choice_of_number_of_shares }}
+        shares in the firm and {% if player.payoff > 0 %} made {% else %} lost {% endif %} {{ player.payoff | c }}.
+    </p>
+    <p>
+        Your wallet now contains {{ wallet }}.
+    </p>
+
+    <button class="btn btn-primary">Want to try again? </button>
+    <!-- {% next_button %} -->
+{% endblock %}
