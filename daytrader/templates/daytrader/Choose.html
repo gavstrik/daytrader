@@ -2,7 +2,7 @@
 {% load staticfiles otree %}
 
 {% block title %}
-    Firma {{ player.company_name }}
+    {{ player.company_name }}
 {% endblock %}
 
 {% block content %}
@@ -30,7 +30,7 @@
     {% else %}
     Du er den første trader,
     {% endif %}
-    og du skal nu handle aktier i firma {{ player.company_name }}.
+    og du skal nu handle aktier i firmaet '{{ player.company_name }}'.
     Du kigger i sækken, og ser et ansigt der er
     {% if player.drawn_face == True %}
         <strong>glad</strong>

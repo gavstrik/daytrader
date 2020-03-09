@@ -5,8 +5,8 @@ from otree.api import (
 from django.conf import settings
 import random
 import json
-import string
-
+import pandas as pd
+names = pd.read_excel("daytrader/Fictional_Company_Names.xlsx")
 
 author = 'Robin Engelhardt'
 
@@ -33,7 +33,7 @@ class Constants(BaseConstants):
 
     # firm attributes
     number_of_companies = num_rounds
-    company_names = string.ascii_uppercase[:number_of_companies]
+    # company_names = string.ascii_uppercase[:number_of_companies] # PS: change so that there can be more than 26 firms
     num_faces = 3
 
 
@@ -54,12 +54,16 @@ class Subsession(BaseSubsession):
         # creating static company states in round 1, save in session.vars
         # and retrieve for next rounds. Else we get an assignment error.
         if self.round_number == 1:
-            company_states = Json_action.to_string([[bool(random.getrandbits(1))
+            company_names = random.sample(names["Name"].tolist(), Constants.number_of_companies)
+            company_states = [[bool(random.getrandbits(1))
                                 for _ in range(Constants.num_faces)]
-                                for _ in range(Constants.number_of_companies)])
+                                for _ in range(Constants.number_of_companies)]
+            self.session.vars['company_names'] = company_names
             self.session.vars['company_states'] = company_states
-            print(self.round_number, company_states)
+            for i in range(len(company_names)):
+                print(i, company_names[i], company_states[i])
         else:
+            company_names = self.session.vars['company_names']
             company_states = self.session.vars['company_states']
 
 
@@ -67,9 +71,9 @@ class Subsession(BaseSubsession):
             if self.round_number == 1:
                 player.wallet = Constants.start_wallet
                 player.price = Constants.start_price
-            player.company_name = Constants.company_names[(idp + self.round_number - 1)%Constants.num_rounds]
-            # player.company_state = Json_action.to_string(Constants.company_states[(idp + self.round_number - 1)%Constants.num_rounds])
-            player.company_state = Json_action.to_string(Json_action.from_string(company_states)[(idp + self.round_number - 1)%Constants.num_rounds])
+            player.company_name = company_names[(idp + self.round_number - 1)%Constants.num_rounds]
+            player.company_state = Json_action.to_string(
+                                   company_states[(idp + self.round_number - 1)%Constants.num_rounds])
             player.drawn_face = random.choice(Json_action.from_string(player.company_state))
             player.number_of_glad_faces = sum(Json_action.from_string(player.company_state))
 
@@ -101,7 +105,6 @@ class Player(BasePlayer):
             return 0
         num_shares_that_can_be_bought = int(self.wallet / self.price)
         self.can_buy = min([num_shares_that_can_be_bought, 1000])
-        print(self.id_in_group, 'can buy', self.can_buy)
         return self.can_buy
 
     def old_share_price(self):
@@ -143,7 +146,6 @@ class Player(BasePlayer):
                 price_change -= Constants.price_change_per_share * previous_choice_of_number_of_shares
             self.price = self.old_share_price() + price_change * self.old_share_price()
 
-        print(self.id_in_group, 'price', self.price)
         return self.price
 
     def update_wallet(self):
@@ -153,11 +155,8 @@ class Player(BasePlayer):
             # retrieve actions from previous round:
             previous_price = self.in_round(self.round_number - 1).price
             previous_choice_of_number_of_shares = self.in_round(self.round_number - 1).choice_of_number_of_shares
-
-            # print('previous', self.round_number, self.in_round(self.round_number - 1).wallet, self.in_round(self.round_number - 1).price, self.in_round(self.round_number - 1).choice_of_number_of_shares)
             self.wallet = self.in_round(self.round_number - 1).wallet - previous_price * previous_choice_of_number_of_shares
 
-        print(self.id_in_group, 'wallet', self.wallet)
         return self.wallet
 
     def save_in_session_vars(self):
