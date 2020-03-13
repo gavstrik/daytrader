@@ -41,6 +41,7 @@ class Choose(Page):
     form_model = 'player' # setting a form model for current player
     form_fields = ['choice_of_trade', 'choice_of_number_of_shares'] # setting a form field to fill out
 
+    timeout_seconds = 20
     # retrieving variables for a trade history table
     def vars_for_template(self):
         prices = [self.session.vars['{}{}'.format(self.player.company_name, r)][0]
@@ -75,12 +76,12 @@ class Delisted(Page):
 
 class Results(Page):
     def is_displayed(self):
-        return self.player.price > 1 & self.round_number == Constants.num_rounds
+        return self.round_number == Constants.num_rounds
 
     def vars_for_template(self):
+        self.player.payoff()
         return {
-            'wallet': self.player.wallet,
-            'player_in_all_rounds': self.player.in_rounds(1, self.round_number),
+            'wallet': c(self.player.wallet - self.player.price * self.player.choice_of_number_of_shares),
         }
 
 

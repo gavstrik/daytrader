@@ -89,34 +89,10 @@ DEMO_PAGE_INTRO_TEXT = """
 
 ROOMS = [
     {
-        'name': 'rysensteen',
-        'display_name': 'Rysensteen Gymnasium @ CIBS'
+        'name': 'test',
+        'display_name': 'test @ CIBS'
     }
 ]
-
-
-# from here on are qualifications requirements for workers
-# see description for requirements on Amazon Mechanical Turk website:
-# http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QualificationRequirementDataStructureArticle.html
-# and also in docs for boto:
-# https://boto.readthedocs.org/en/latest/ref/mturk.html?highlight=mturk#module-boto.mturk.qualification
-
-# mturk_hit_settings = {
-#     'keywords': ['easy', 'bonus', 'choice', 'study'],
-#     'title': 'Title for your experiment',
-#     'description': 'Description for your experiment',
-#     'frame_height': 500,
-#     'preview_template': 'global/MTurkPreview.html',
-#     'minutes_allotted_per_assignment': 60,
-#     'expiration_hours': 7*24, # 7 days
-#     #'grant_qualification_id': 'YOUR_QUALIFICATION_ID_HERE',# to prevent retakes
-#     'qualification_requirements': [
-#         # qualification.LocaleRequirement("EqualTo", "US"),
-#         # qualification.PercentAssignmentsApprovedRequirement("GreaterThanOrEqualTo", 50),
-#         # qualification.NumberHitsApprovedRequirement("GreaterThanOrEqualTo", 5),
-#         # qualification.Requirement('YOUR_QUALIFICATION_ID_HERE', 'DoesNotExist')
-#     ]
-# }
 
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
@@ -128,14 +104,14 @@ SESSION_CONFIG_DEFAULTS = {
     'real_world_currency_per_point': 0.00,
     'participation_fee': 0.20,
     'doc': "",
-    # 'mturk_hit_settings': mturk_hit_settings,
 }
 
 SESSION_CONFIGS = [
-    {  # new session_config added, 20200225
+    {
         'name': 'daytrader',
         'display_name': "daytrader",
         'num_demo_participants': 3,
+        #'num_companies': 3,
         'app_sequence': ['daytrader'],
     },
 ]
