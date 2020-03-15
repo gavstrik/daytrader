@@ -29,7 +29,14 @@ class Intro5(Page):
         return self.round_number == 1
 
 
+class Intro6(Page):
+    def is_displayed(self):
+        return self.round_number == 1
+
+
 class MyWaitPage(WaitPage):
+    title_text = "Vent til alle er klar"
+    body_text = "Spillet starter om et øjeblik..."
     def after_all_players_arrive(self):
         for player in self.group.get_players():
             player.new_share_price()
@@ -79,9 +86,22 @@ class Results(Page):
         return self.round_number == Constants.num_rounds
 
     def vars_for_template(self):
-        self.player.payoff()
+        tjent = self.player.payoff()
+        firma = [p.company_name for p in self.player.in_all_rounds()]
+        tilstand = [p.company_state for p in self.player.in_all_rounds()]
+        choices = [p.choice_of_trade for p in self.player.in_all_rounds()]
+        handler = [p.choice_of_number_of_shares for p in self.player.in_all_rounds()]
+        closing = [c(p.closing_price(p.company_name)) for p in self.player.in_all_rounds()]
+
+        data = zip(firma, tilstand, choices, handler, closing, tjent)
+        handlet = c(sum([p.price * p.choice_of_number_of_shares
+                     for p in self.player.in_all_rounds()]))
+
         return {
-            'wallet': c(self.player.wallet - self.player.price * self.player.choice_of_number_of_shares),
+            'handlet': handlet,
+            'kurtage': c(0.02 * handlet),
+            'ialt': self.player.payoff - (0.02 * handlet),
+            'data': data,
         }
 
 
@@ -91,6 +111,7 @@ page_sequence = [
     Intro3,
     Intro4,
     Intro5,
+    Intro6,
     MyWaitPage,
     Choose,
     ResultsWaitPage,

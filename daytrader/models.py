@@ -186,12 +186,19 @@ class Player(BasePlayer):
 
 
     def payoff(self):
-        profit = 0
+        # the earnings are calculated after last round and stored in
+        # in participant.vars and summed in self.payoff
+        self.participant.vars['profit'] = []
         for idp, p in enumerate(self.in_all_rounds()):
             if p.choice_of_trade == True:
-                profit += (self.closing_price(p.company_name) - p.price) * p.choice_of_number_of_shares
+                self.participant.vars['profit'].append(c((self.closing_price(p.company_name)
+                                                - p.price) * p.choice_of_number_of_shares))
             else:
-                profit -= (self.closing_price(p.company_name) - p.price) * p.choice_of_number_of_shares
-            print(idp, p.id_in_group, p.company_name, p.price, self.closing_price(p.company_name), p.choice_of_trade, p.choice_of_number_of_shares, profit)
-            self.payoff = c(profit)
-        return self.payoff
+                self.participant.vars['profit'].append(c(-(self.closing_price(p.company_name)
+                                                - p.price) * p.choice_of_number_of_shares))
+            print(idp, p.id_in_group, p.company_name, p.price,
+                  self.closing_price(p.company_name),
+                  p.choice_of_trade, p.choice_of_number_of_shares)
+        print(self.id_in_group, self.participant.vars['profit'])
+        self.payoff = sum(self.participant.vars['profit'])
+        return self.participant.vars['profit']
