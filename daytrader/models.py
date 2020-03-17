@@ -30,13 +30,10 @@ class Constants(BaseConstants):
     start_price = 50.0
     start_wallet = 10000
     price_change_per_share = 0.001
+    kurtage = 0.01
 
     # firm attributes
-    # number_of_companies = num_rounds
     num_faces = 3
-
-    # bot attributes
-    p_ego = 0.1
 
 
 class Json_action:
@@ -78,7 +75,7 @@ class Subsession(BaseSubsession):
             player.company_state = Json_action.to_string(
                                    company_states[(idp + self.round_number - 1)%number_of_players])
             player.drawn_face = random.choice(Json_action.from_string(player.company_state))
-            player.number_of_glad_faces = sum(Json_action.from_string(player.company_state))
+            #player.number_of_glad_faces = sum(Json_action.from_string(player.company_state))
 
 
 class Group(BaseGroup):
@@ -89,7 +86,7 @@ class Player(BasePlayer):
     wallet = models.FloatField()
     company_name = models.StringField()
     company_state = models.StringField()
-    number_of_glad_faces = models.PositiveIntegerField()
+    #number_of_glad_faces = models.PositiveIntegerField()
     drawn_face = models.BooleanField()
     choice_of_trade = models.BooleanField(
         choices=[
@@ -158,7 +155,6 @@ class Player(BasePlayer):
             previous_price = self.in_round(self.round_number - 1).price
             previous_choice_of_number_of_shares = self.in_round(self.round_number - 1).choice_of_number_of_shares
             self.wallet = self.in_round(self.round_number - 1).wallet - previous_price * previous_choice_of_number_of_shares
-
         return self.wallet
 
     def save_in_session_vars(self):
@@ -168,10 +164,9 @@ class Player(BasePlayer):
                                   self.drawn_face,
                                   self.choice_of_trade,
                                   self.choice_of_number_of_shares)
-        print(self.session.vars, '\n')
 
     def closing_price(self, company):
-        # retrieve actions from last round:
+        # retrieve actions from last trade:
         tmp = '{}{}'.format(company, Constants.num_rounds)
         tmp0 = self.session.vars[tmp][0]
         tmp3 = self.session.vars[tmp][3]
@@ -196,9 +191,5 @@ class Player(BasePlayer):
             else:
                 self.participant.vars['profit'].append(c(-(self.closing_price(p.company_name)
                                                 - p.price) * p.choice_of_number_of_shares))
-            print(idp, p.id_in_group, p.company_name, p.price,
-                  self.closing_price(p.company_name),
-                  p.choice_of_trade, p.choice_of_number_of_shares)
-        print(self.id_in_group, self.participant.vars['profit'])
         self.payoff = sum(self.participant.vars['profit'])
         return self.participant.vars['profit']

@@ -7,36 +7,38 @@
 {% block content %}
 
 <p>
-  Du skal nu lukke dine positioner. Du har handlet for i alt {{ handlet }}.
+  Vi lukker nu dine positioner. Du har handlet for i alt {{ handlet }}.
   I tabellen kan du se, hvordan det gik.
 <p/>
 
 <table class="table">
     <tr>
-        <th>firma</th>
-        <th>tilstand</th>
-        <th>handler</th>
-        <th>endelig pris</th>
-        <th>tjent</th>
+        <th> firma         </th>
+        <th> tilstand      </th>
+        <th> handler       </th>
+        <th> din købspris  </th>
+        <th> lukkepris     </th>
+        <th> tjent         </th>
     </tr>
-    {% for firma, tilstand, choices, deals, closing, tjent in data %}
+    {% for firma, tilstand, choice, deal, price, closing, tjent in data %}
         <tr>
             <td> {{ firma }}    </td>
             <td> {{ tilstand }} </td>
-            <td> {%if choices == True %} + {% else %} - {% endif %}
-                 {{ deals }} </td>
+            <td> {%if choice == True %} + {% else %} - {% endif %}
+                 {{ deal }}     </td>
+            <td> {{ price }}    </td>
             <td> {{ closing }}  </td>
-            <td> {{ tjent }}    </td>
+            <td> <strong> {{ tjent }} </strong> </td>
         </tr>
     {% endfor %}
 </table>
 
 <p>
   Du har tjent i alt {{ player.payoff }}.
+  Gebyrer og kurtage ({{ kurtage_pct }} procent af handelsværdi) beløber sig til {{ kurtage }}.
 <p/>
 <p>
-  Gebyrer og kurtage (2 pct af alle handler) beløber sig til {{ kurtage }}. Din samlede fortjeneste
-  er {{ ialt }}.
+  Din samlede fortjeneste er {{ ialt }}.
 <p/>
 <p>
   Tak for at handle hos os.

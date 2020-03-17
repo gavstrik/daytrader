@@ -111,7 +111,6 @@ SESSION_CONFIGS = [
         'name': 'daytrader',
         'display_name': "daytrader",
         'num_demo_participants': 3,
-        #'num_companies': 3,
         'app_sequence': ['daytrader'],
     },
 ]

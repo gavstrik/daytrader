@@ -91,16 +91,18 @@ class Results(Page):
         tilstand = [p.company_state for p in self.player.in_all_rounds()]
         choices = [p.choice_of_trade for p in self.player.in_all_rounds()]
         handler = [p.choice_of_number_of_shares for p in self.player.in_all_rounds()]
+        price = [c(p.price) for p in self.player.in_all_rounds()]
         closing = [c(p.closing_price(p.company_name)) for p in self.player.in_all_rounds()]
 
-        data = zip(firma, tilstand, choices, handler, closing, tjent)
-        handlet = c(sum([p.price * p.choice_of_number_of_shares
-                     for p in self.player.in_all_rounds()]))
+        data = zip(firma, tilstand, choices, handler, price, closing, tjent)
+        handelsvaerdi = c(sum([p.price * p.choice_of_number_of_shares
+                        for p in self.player.in_all_rounds()]))
 
         return {
-            'handlet': handlet,
-            'kurtage': c(0.02 * handlet),
-            'ialt': self.player.payoff - (0.02 * handlet),
+            'handlet': handelsvaerdi,
+            'kurtage_pct': Constants.kurtage * 100,
+            'kurtage': c(Constants.kurtage * handelsvaerdi),
+            'ialt': self.player.payoff - (Constants.kurtage * handelsvaerdi),
             'data': data,
         }
 
